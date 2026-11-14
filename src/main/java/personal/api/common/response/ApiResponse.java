@@ -37,6 +37,7 @@ public class ApiResponse<T> {
                 .paging(PagingResponse.builder()
                         .page(page.getNumber())
                         .totalPages(page.getTotalPages())
+                        .totalElements(page.getTotalElements())
                         .size(page.getSize())
                         .build())
                 .build();
