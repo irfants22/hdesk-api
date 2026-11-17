@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import personal.api.common.response.ApiResponse;
+import personal.api.user.dto.CreateUserRequestDto;
 import personal.api.user.dto.UserDto;
 import personal.api.user.dto.UserFilterDto;
 
@@ -18,6 +19,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/api/users/")
@@ -32,6 +35,13 @@ public class UserController {
             @Valid UserFilterDto filter,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<UserDto> result = userService.getUsers(filter, pageable);
+        return ApiResponse.ok(result);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping()
+    public ApiResponse<UserDto> createUser(@RequestBody @Valid CreateUserRequestDto request) {
+        UserDto result = userService.createUser(request);
         return ApiResponse.ok(result);
     }
 
