@@ -1,6 +1,7 @@
 package personal.api.user;
 
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import personal.api.role.Role;
 import personal.api.role.RoleRepository;
 import personal.api.user.dto.CreateUserRequestDto;
+import personal.api.user.dto.UpdateUserStatusRequestDto;
 import personal.api.user.dto.UserDto;
 import personal.api.user.dto.UserFilterDto;
 import personal.api.util.ValidationUtil;
@@ -64,6 +66,22 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
+        userRepository.save(user);
+
+        return UserMapper.toUserResponse(user);
+    }
+
+    public UserDto updateUserStatus(UUID userId, UpdateUserStatusRequestDto request, String email) {
+        validationUtil.validate(request);
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (user.getEmail().equals(email) && !request.getActive()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot deactivate your own account");
+        }
+
+        user.setActive(request.getActive());
         userRepository.save(user);
 
         return UserMapper.toUserResponse(user);
