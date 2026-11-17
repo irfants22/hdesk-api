@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
-@RequestMapping("/api/users/")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -59,7 +59,7 @@ public class UserController {
         return ApiResponse.ok(result);
     }
 
-    @GetMapping("me")
+    @GetMapping("/me")
     public ApiResponse<UserDto> currentUser(@AuthenticationPrincipal String email) {
         UserDto result = userService.currentUser(email);
         return ApiResponse.ok(result);

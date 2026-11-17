@@ -23,19 +23,19 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public ApiResponse<UserDto> register(@RequestBody @Valid RegisterRequestDto request) {
         UserDto result = authService.register(request);
         return ApiResponse.ok(result);
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ApiResponse<TokenResponseDto> login(@RequestBody @Valid LoginRequestDto request) {
         TokenResponseDto result = authService.login(request);
         return ApiResponse.ok(result);
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public ApiResponse<Boolean> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String header) {
         authService.logout(header.substring(7));
         return ApiResponse.ok(true);
