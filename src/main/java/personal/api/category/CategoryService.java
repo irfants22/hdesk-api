@@ -1,5 +1,7 @@
 package personal.api.category;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -7,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import personal.api.category.dto.CategoryDto;
 import personal.api.category.dto.CreateCategoryRequestDto;
+import personal.api.category.dto.UpdateCategoryRequestDto;
 import personal.api.util.ValidationUtil;
 
 @Service
@@ -19,14 +22,35 @@ public class CategoryService {
     public CategoryDto createCategory(CreateCategoryRequestDto request) {
         validationUtil.validate(request);
 
-        if (categoryRepository.findByName(request.getName()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name already exists");
+        if (categoryRepository.existsByNameIgnoreCase(request.getName().trim())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Category name already exists");
         }
 
         Category category = new Category();
-        category.setName(request.getName());
+        category.setName(request.getName().trim());
         category.setDescription(request.getDescription());
         category.setActive(request.getActive());
+        categoryRepository.save(category);
+
+        return CategoryMapper.toCategoryResponse(category);
+    }
+
+    public CategoryDto updateCategory(UUID categoryId, UpdateCategoryRequestDto request) {
+        validationUtil.validate(request);
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+
+        if (categoryRepository.existsByNameIgnoreCaseAndIdNot(request.getName().trim(), categoryId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Category name already exists");
+        }
+
+        String description = request.getDescription() == null || request.getDescription().isEmpty()
+                ? null
+                : request.getDescription().trim();
+
+        category.setName(request.getName().trim());
+        category.setDescription(description);
         categoryRepository.save(category);
 
         return CategoryMapper.toCategoryResponse(category);
