@@ -1,5 +1,6 @@
 package personal.api.category;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -74,5 +75,13 @@ public class CategoryService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
         return CategoryMapper.toCategoryResponse(category);
+    }
+
+    public List<CategoryDto> getCategories(String search) {
+        List<Category> categories = search == null || search.isBlank()
+                ? categoryRepository.findAllByOrderByNameAsc()
+                : categoryRepository.findAllByNameContainingIgnoreCaseOrderByNameAsc(search.trim());
+
+        return categories.stream().map(CategoryMapper::toCategoryResponse).toList();
     }
 }

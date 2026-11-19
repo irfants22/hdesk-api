@@ -12,6 +12,7 @@ import personal.api.category.dto.UpdateCategoryRequestDto;
 import personal.api.category.dto.UpdateCategoryStatusRequestDto;
 import personal.api.common.response.ApiResponse;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -55,6 +57,13 @@ public class CategoryController {
     public ApiResponse<CategoryDto> getCategoryDetail(
             @PathVariable UUID categoryId) {
         CategoryDto result = categoryService.getCategoryDetail(categoryId);
+        return ApiResponse.ok(result);
+    }
+
+    @GetMapping()
+    public ApiResponse<List<CategoryDto>> getCategories(
+            @RequestParam(required = false) String search) {
+        List<CategoryDto> result = categoryService.getCategories(search);
         return ApiResponse.ok(result);
     }
 
