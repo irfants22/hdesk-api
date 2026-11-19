@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -49,4 +50,12 @@ public class CategoryController {
         CategoryDto result = categoryService.updateCategoryStatus(categoryId, request);
         return ApiResponse.ok(result);
     }
+
+    @GetMapping("/{categoryId}")
+    public ApiResponse<CategoryDto> getCategoryDetail(
+            @PathVariable UUID categoryId) {
+        CategoryDto result = categoryService.getCategoryDetail(categoryId);
+        return ApiResponse.ok(result);
+    }
+
 }

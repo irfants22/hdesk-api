@@ -68,4 +68,11 @@ public class CategoryService {
 
         return CategoryMapper.toCategoryResponse(category);
     }
+
+    public CategoryDto getCategoryDetail(UUID categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+
+        return CategoryMapper.toCategoryResponse(category);
+    }
 }
