@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import personal.api.category.dto.CategoryDto;
 import personal.api.category.dto.CreateCategoryRequestDto;
 import personal.api.category.dto.UpdateCategoryRequestDto;
+import personal.api.category.dto.UpdateCategoryStatusRequestDto;
 import personal.api.common.response.ApiResponse;
 
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -37,6 +39,14 @@ public class CategoryController {
     public ApiResponse<CategoryDto> updateCategory(@PathVariable UUID categoryId,
             @RequestBody UpdateCategoryRequestDto request) {
         CategoryDto result = categoryService.updateCategory(categoryId, request);
+        return ApiResponse.ok(result);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{categoryId}/status")
+    public ApiResponse<CategoryDto> updateCategoryStatus(@PathVariable UUID categoryId,
+            @RequestBody @Valid UpdateCategoryStatusRequestDto request) {
+        CategoryDto result = categoryService.updateCategoryStatus(categoryId, request);
         return ApiResponse.ok(result);
     }
 }

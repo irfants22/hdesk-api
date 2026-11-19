@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import personal.api.category.dto.CategoryDto;
 import personal.api.category.dto.CreateCategoryRequestDto;
 import personal.api.category.dto.UpdateCategoryRequestDto;
+import personal.api.category.dto.UpdateCategoryStatusRequestDto;
 import personal.api.util.ValidationUtil;
 
 @Service
@@ -51,6 +52,18 @@ public class CategoryService {
 
         category.setName(request.getName().trim());
         category.setDescription(description);
+        categoryRepository.save(category);
+
+        return CategoryMapper.toCategoryResponse(category);
+    }
+
+    public CategoryDto updateCategoryStatus(UUID categoryId, UpdateCategoryStatusRequestDto request) {
+        validationUtil.validate(request);
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+
+        category.setActive(request.getActive());
         categoryRepository.save(category);
 
         return CategoryMapper.toCategoryResponse(category);
